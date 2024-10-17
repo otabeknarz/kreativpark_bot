@@ -1,0 +1,4 @@
+.idea/
+images/qr_codes/*
+xlsx/*
+.env
