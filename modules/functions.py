@@ -1,11 +1,9 @@
 import requests
-import uuid
 import os
 import jwt
 import time
 
 from requests import Response
-import qrcode
 from dotenv import load_dotenv
 from .settings import get_settings
 
@@ -100,24 +98,9 @@ class JWTManager:
 jwt_manager = JWTManager()
 
 
-def get_req(url, data=None) -> Response:
+def get_req(url: str, data=None) -> Response:
     return jwt_manager.make_request(url, "GET", data)
 
 
-def post_req(url, obj) -> Response:
+def post_req(url: str, obj: dict) -> Response:
     return jwt_manager.make_request(url, "POST", obj)
-
-
-def make_qrcode() -> str:
-    ID = uuid.uuid4()
-    qr = qrcode.make(str(ID))
-    qr.save(bot_settings.QRCODES_PATH + str(ID) + ".png")
-    return str(ID)
-
-
-def delete_file(file_path):
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        return True
-    else:
-        return False
