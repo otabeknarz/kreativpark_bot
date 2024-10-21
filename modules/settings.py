@@ -1,4 +1,3 @@
-import requests
 import os
 from dotenv import load_dotenv
 from functools import lru_cache
@@ -14,16 +13,10 @@ class Settings:
 
         # Base url
         self.BASE_URL = "https://api.otabek.me/"
+        self.LOGIN_URL = "https://otabek.me/login/"
 
         # Api endpoint
         self.API_ENDPOINT = "api/v2/"
-
-        # Getting csrf_token from session
-        self.CSRF_TOKEN_URL = self.BASE_URL + self.API_ENDPOINT + "get-csrf-token/"
-        self.SESSION_ID = os.getenv("SESSION_ID")
-        self.CSRF_TOKEN = requests.get(
-            self.CSRF_TOKEN_URL, cookies={"sessionid": self.SESSION_ID}
-        ).json()["csrf_token"]
 
         # Urls for people
         self.GET_PEOPLE_URL = self.BASE_URL + self.API_ENDPOINT + "people/?format=json"
@@ -44,13 +37,19 @@ class Settings:
             self.BASE_URL + self.API_ENDPOINT + "qrcode/delete/"
         )
 
+        # Urls for auth
+        self.ACCESS_TOKEN_URL = self.BASE_URL + self.API_ENDPOINT + "auth/token/"
+        self.REFRESH_TOKEN_URL = (
+            self.BASE_URL + self.API_ENDPOINT + "auth/token/refresh/"
+        )
+
         # This url to get qrcode and enter library
         self.LOGIN_LIBRARY = self.BASE_URL + self.API_ENDPOINT + "login-library/"
         self.GET_NUMBER_TOKEN = self.BASE_URL + self.API_ENDPOINT + "get-number-token/"
 
         # admins
         self.admins = {
-            "Otabek": 5551503420,
+            # "Otabek": 5551503420,
             "Azizbek": 1251979840,
             "Iskandar": 228633803,
         }
@@ -59,7 +58,7 @@ class Settings:
         self.STATS_URL = self.BASE_URL + self.API_ENDPOINT + "stats/"
 
         # Bot settings
-        self.BOT_API_TOKEN = os.getenv("BOT_API_TOKEN")
+        self.BOT_API_TOKEN = os.getenv("API_TOKEN")
         self.IBRAT_CHANNEL = "@kreativparkuz"
         self.QRCODES_PATH = "images/qr_codes/"
 
