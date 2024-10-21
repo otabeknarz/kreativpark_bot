@@ -36,7 +36,7 @@ inline_buttons = InlineButtons()
 async def is_subscribed(bot, message: types.Message, state=None):
     """The function checks the did user subscribe the channel if so returns True else False"""
     is_subscribed_ = await bot.get_chat_member(
-        chat_id=bot_settings.IBRAT_CHANNEL, user_id=message.from_user.id
+        chat_id=bot_settings.CHANNEL, user_id=message.from_user.id
     )
     if is_subscribed_.status == "left":
         await message.answer(
@@ -50,16 +50,37 @@ async def is_subscribed(bot, message: types.Message, state=None):
     return True
 
 
+def debug_mode():
+    def decorator(func):
+        async def wrapper(message: types.Message, *args, **kwargs):
+            # Check if debug mode is disabled
+            if not bot_settings.DEBUG:
+                return await func(message, *args, **kwargs)
+            else:
+                # If debug mode is enabled and the user is an admin, proceed
+                if message.from_user.id in bot_settings.ignore_debug_users.values():
+                    return await func(message, *args, **kwargs)
+                # If not an admin, send a "maintenance" message
+                await message.answer(
+                    "Hozirda biz botga tuzatishlar kiritmoqdamiz iltimos kuting, "
+                    "noqulayliklar uchun uzr so'raymiz"
+                )
+
+        return wrapper
+
+    return decorator
+
+
+@debug_mode()
 @dp.message(CommandStart())
 async def send_welcome(message: types.Message):
     if not await is_subscribed(bot, message):
         return
 
-    response = json.loads(
-        functions.get_req(
-            bot_settings.CHECK_PEOPLE_URL + str(message.from_user.id) + "/"
-        ).text
-    )
+    response = functions.get_req(
+        bot_settings.CHECK_PEOPLE_URL + str(message.from_user.id) + "/"
+    ).json()
+
     if message.from_user.id in bot_settings.admins.values():
         await message.reply(
             f"Assalomu alaykum <strong>{message.from_user.full_name}!</strong>",
@@ -79,11 +100,12 @@ async def send_welcome(message: types.Message):
         )
 
 
+@debug_mode()
 @dp.callback_query()
 async def check_subs_callback(callback: types.CallbackQuery):
     if callback.data == "subscribed":
         is_subscribed = await bot.get_chat_member(
-            chat_id=bot_settings.IBRAT_CHANNEL, user_id=callback.message.chat.id
+            chat_id=bot_settings.CHANNEL, user_id=callback.message.chat.id
         )
         if is_subscribed.status != "left":
             response = json.loads(
@@ -115,16 +137,15 @@ async def check_subs_callback(callback: types.CallbackQuery):
             )
 
 
+@debug_mode()
 @dp.message(TextEqualsFilter("Kirish kodini olish"))
 async def get_number_token(message: types.Message):
     if not await is_subscribed(bot, message):
         return
 
-    response = json.loads(
-        functions.get_req(
-            bot_settings.CHECK_PEOPLE_URL + str(message.from_user.id) + "/"
-        ).text
-    )
+    response = functions.get_req(
+        bot_settings.CHECK_PEOPLE_URL + str(message.from_user.id) + "/"
+    ).json()
 
     if response["status"] == "false":
         await message.answer(
@@ -138,13 +159,14 @@ async def get_number_token(message: types.Message):
     ).json()
     if res["status"] == "true":
         await message.reply(
-            f"Sizning kirish uchun kodingiz: <code>{res['number_token']}</code>",
+            f"Sizning kirish uchun kodingiz: <code>{res['number_token']}</code>\nE'tibor bering kod faqat bir martalik va 1 daqiqa ichida amal qiladi",
             reply_markup=inline_buttons.web_login,
         )
     else:
         await message.reply("Qayta urinib ko'ring")
 
 
+@debug_mode()
 @dp.message(TextEqualsFilter("✍️ Ro'yxatdan o'tish"))
 async def run_name_state(message: types.Message, state: FSMContext):
     if not await is_subscribed(bot, message):
@@ -157,6 +179,7 @@ async def run_name_state(message: types.Message, state: FSMContext):
     await state.set_state(RegistrationState.name)
 
 
+@debug_mode()
 @dp.message(RegistrationState.name)
 async def name_state(message: types.Message, state: FSMContext):
     if not await is_subscribed(bot, message, state):
@@ -171,6 +194,7 @@ async def name_state(message: types.Message, state: FSMContext):
     await state.set_state(RegistrationState.passport_data)
 
 
+@debug_mode()
 @dp.message(RegistrationState.passport_data)
 async def passport_data_state(message: types.Message, state: FSMContext):
     if not await is_subscribed(bot, message, state):
@@ -185,6 +209,7 @@ async def passport_data_state(message: types.Message, state: FSMContext):
     await state.set_state(RegistrationState.phone_number)
 
 
+@debug_mode()
 @dp.message(RegistrationState.phone_number)
 async def phone_number_state(message: types.Message, state: FSMContext):
     if not await is_subscribed(bot, message, state):
@@ -206,6 +231,7 @@ async def phone_number_state(message: types.Message, state: FSMContext):
     await state.clear()
 
 
+@debug_mode()
 @dp.message(TextEqualsFilter("🖼 Kirish uchun QR Code olish"))
 async def purpose_state(message: types.Message, state: FSMContext):
     if not await is_subscribed(bot, message):
@@ -246,6 +272,7 @@ async def purpose_state(message: types.Message, state: FSMContext):
     await state.set_state(LoginState.purpose)
 
 
+@debug_mode()
 @dp.message(LoginState.purpose)
 async def qrcode_make(message: types.Message, state: FSMContext):
     if not await is_subscribed(bot, message, state):
@@ -291,6 +318,7 @@ async def qrcode_make(message: types.Message, state: FSMContext):
             await state.clear()
 
 
+@debug_mode()
 @dp.message(TextEqualsFilter("🖼 Chiqish uchun QR Code olish"))
 async def logout_qrcode(message: types.Message):
     if not await is_subscribed(bot, message):
@@ -339,6 +367,7 @@ async def logout_qrcode(message: types.Message):
                 await logout_qrcode(message)
 
 
+@debug_mode()
 @dp.message(TextEqualsFilter("👤 Ma'lumotlarim"))
 async def dashboard(message: types.Message):
     if not await is_subscribed(bot, message):
@@ -357,42 +386,6 @@ async def dashboard(message: types.Message):
             f"Assalomu alaykum!\nKreativ Parkga kirishdan oldin ro'yxatdan o'ting",
             reply_markup=buttons.registration,
         )
-
-
-# @dp.message_handler(text="❌ Kirish uchun QR Codeni o'chirish")
-# async def qrcode_make(message: types.Message):
-#     is_subscribed = await bot.get_chat_member(
-#         chat_id=bot_settings.IBRAT_CHANNEL, user_id=message.from_user.id
-#     )
-#     if is_subscribed["status"] == "left":
-#         await message.answer(
-#             "Botdan foydalanishingiz uchun birinchi navbatda bizning kanalga a'zo bo'lishingiz kerak",
-#             reply_markup=inline_buttons.subscribe_inline,
-#         )
-#         return
-#
-#     check_people_has_qrcode = functions.get_req(
-#         bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id)
-#     )
-#     if check_people_has_qrcode.status_code == 200:
-#         if json.loads(check_people_has_qrcode.text)["status"] == "true":
-#             response = functions.get_req(
-#                 bot_settings.GET_QRCODES_DELETE_URL + str(message.chat.id)
-#             )
-#             if response.status_code == 200:
-#                 if json.loads(response.text)["status"] == "true":
-#                     if not functions.delete_file(
-#                         json.loads(response.text)["image_path"]
-#                     ):
-#                         print(
-#                             "!!!!! Rasm o'chirilmadi !!!!!\nID: ",
-#                             json.loads(response.text)["image_path"],
-#                         )
-#                     await message.answer(
-#                         "O'chirildi", reply_markup=keyboards.main_keyboard
-#                     )
-#         elif json.loads(check_people_has_qrcode.text)["status"] == "false":
-#             await message.answer("Sizda QR Code yo'q")
 
 
 # Admins commands
