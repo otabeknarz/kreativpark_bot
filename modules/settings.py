@@ -54,12 +54,14 @@ class Settings:
             "Iskandar": 228633803,
         }
 
+        self.ignore_debug_users = {"Otabek": 5551503420, **self.admins}
+
         # admins urls
         self.STATS_URL = self.BASE_URL + self.API_ENDPOINT + "stats/"
 
         # Bot settings
         self.BOT_API_TOKEN = os.getenv("API_TOKEN")
-        self.IBRAT_CHANNEL = "@kreativparkuz"
+        self.CHANNEL = "@kreativparkuz"
         self.QRCODES_PATH = "images/qr_codes/"
 
         # Commands
@@ -73,6 +75,9 @@ class Settings:
             "Fitrat media",
             "Yoshlar ovozi",
         )
+
+        # Debug mode for there is a some bugs the bot answers everyone like currently bot is in debug mode
+        self.DEBUG = os.getenv("DEBUG")
 
 
 @lru_cache
