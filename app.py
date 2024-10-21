@@ -137,7 +137,10 @@ async def get_number_token(message: types.Message):
         bot_settings.GET_NUMBER_TOKEN + str(message.chat.id) + "/"
     ).json()
     if res["status"] == "true":
-        await message.reply(f"Sizning kirish uchun kodingiz: {res['number_token']}")
+        await message.reply(
+            f"Sizning kirish uchun kodingiz: <code>{res['number_token']}</code>",
+            reply_markup=inline_buttons.web_login,
+        )
     else:
         await message.reply("Qayta urinib ko'ring")
 
@@ -273,31 +276,18 @@ async def qrcode_make(message: types.Message, state: FSMContext):
         json.loads(check_people_has_qrcode.text)["status"] == "false"
         and check_people_has_qrcode.status_code == 200
     ):
-        ID = functions.make_qrcode()
-        obj = {
-            "ID": ID,
-            "people": message.chat.id,
-            "image_path": bot_settings.QRCODES_PATH + ID + ".png",
-            "purpose": purpose,
-            "type": "IN",
-        }
-
-        req = functions.post_req(bot_settings.POST_QRCODE_URL, obj)
+        req = functions.post_req(
+            bot_settings.POST_QRCODE_URL,
+            {"people_id": str(message.chat.id), "type": "IN", "purpose": purpose},
+        )
 
         if req.status_code == 201:
             await bot.send_photo(
                 message.chat.id,
-                types.FSInputFile(
-                    path=obj["image_path"], filename=obj["image_path"].split("/")[-1]
-                ),
+                f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
                 caption="Sizning kirish uchun qr codeingiz",
                 reply_markup=buttons.main_keyboard,
             )
-            if not functions.delete_file(json.loads(req.text)["image_path"]):
-                print(
-                    "!!!!! Rasm o'chirilmadi !!!!!\nID: ",
-                    json.loads(req.text)["image_path"],
-                )
             await state.clear()
 
 
@@ -326,29 +316,17 @@ async def logout_qrcode(message: types.Message):
         json.loads(check_people_has_qrcode.text)["status"] == "false"
         and check_people_has_qrcode.status_code == 200
     ):
-        ID = functions.make_qrcode()
-        obj = {
-            "ID": ID,
-            "people": message.chat.id,
-            "image_path": bot_settings.QRCODES_PATH + ID + ".png",
-            "purpose": "",
-            "type": "OUT",
-        }
-        req = functions.post_req(bot_settings.POST_QRCODE_URL, obj)
+        req = functions.post_req(
+            bot_settings.POST_QRCODE_URL,
+            {"people_id": str(message.chat.id), "type": "OUT"},
+        )
         if req.status_code == 201:
             await bot.send_photo(
                 message.chat.id,
-                types.FSInputFile(
-                    path=obj["image_path"], filename=obj["image_path"].split("/")[-1]
-                ),
+                f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
                 caption="Sizning chiqish uchun qr codeingiz",
                 reply_markup=buttons.main_keyboard,
             )
-            if not functions.delete_file(json.loads(req.text)["image_path"]):
-                print(
-                    "!!!!! Rasm o'chirilmadi !!!!!\nID: ",
-                    json.loads(req.text)["image_path"],
-                )
     elif (
         json.loads(check_people_has_qrcode.text)["status"] == "true"
         and check_people_has_qrcode.status_code == 200
