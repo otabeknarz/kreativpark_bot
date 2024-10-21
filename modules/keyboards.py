@@ -70,18 +70,13 @@ class Buttons:
             ]
         )
 
-    def name_btn(self, full_name):
-        return ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(full_name)]], resize_keyboard=True
-        )
-
 
 class InlineButtons:
     def __init__(self):
         # INLINE Keyboards
         ibrat_inline_btn = InlineKeyboardButton(
             text="Kreativ Park kanaliga obuna bo'lish",
-            url="https://t.me/" + bot_settings.IBRAT_CHANNEL[1:],
+            url="https://t.me/" + bot_settings.CHANNEL[1:],
         )
         ive_subscribed_btn = InlineKeyboardButton(
             text="A'zo bo'ldim", callback_data="subscribed"
