@@ -77,7 +77,7 @@ class Settings:
         )
 
         # Debug mode for there is a some bugs the bot answers everyone like currently bot is in debug mode
-        self.DEBUG = os.getenv("DEBUG")
+        self.DEBUG = True if os.getenv("DEBUG") == "True" else False
 
 
 @lru_cache
