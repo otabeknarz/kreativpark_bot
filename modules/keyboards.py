@@ -89,3 +89,13 @@ class InlineButtons:
         self.subscribe_inline = InlineKeyboardMarkup(
             inline_keyboard=[[ibrat_inline_btn], [ive_subscribed_btn]]
         )
+
+        self.web_login = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="🔗 Web saytga kirish", url=bot_settings.LOGIN_URL
+                    )
+                ]
+            ]
+        )
