@@ -31,7 +31,7 @@ class Buttons:
         self.main_keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="🖼 Kirish uchun QR Code olish")],
-                [KeyboardButton(text="🖼 Chiqish uchun QR Code olish")],
+                [KeyboardButton(text="🔢 Kirish kodini olish")],
                 [KeyboardButton(text="👤 Ma'lumotlarim")],
             ],
             resize_keyboard=True,
@@ -83,6 +83,16 @@ class InlineButtons:
         )
         self.subscribe_inline = InlineKeyboardMarkup(
             inline_keyboard=[[ibrat_inline_btn], [ive_subscribed_btn]]
+        )
+
+        self.web_profile = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="🔗 Profilimga saytga kirish", url=bot_settings.LOGIN_URL
+                    )
+                ]
+            ]
         )
 
         self.web_login = InlineKeyboardMarkup(
