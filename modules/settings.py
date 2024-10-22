@@ -14,6 +14,7 @@ class Settings:
         # Base url
         self.BASE_URL = "https://api.otabek.me/"
         self.LOGIN_URL = "https://otabek.me/login/"
+        self.PROFILE_URL = "https://otabek.me/dashboard/"
 
         # Api endpoint
         self.API_ENDPOINT = "api/v2/"
@@ -49,7 +50,7 @@ class Settings:
 
         # admins
         self.admins = {
-            # "Otabek": 5551503420,
+            "Otabek": 5551503420,
             "Azizbek": 1251979840,
             "Iskandar": 228633803,
         }
