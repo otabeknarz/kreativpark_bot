@@ -67,6 +67,7 @@ class Buttons:
                 [KeyboardButton(text="UVA")],
                 [KeyboardButton(text="Fitrat media")],
                 [KeyboardButton(text="Yoshlar ovozi")],
+                [KeyboardButton(text="❌ Bekor qilish")],
             ]
         )
 
