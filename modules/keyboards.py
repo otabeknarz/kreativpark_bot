@@ -15,18 +15,6 @@ class Buttons:
     """Reply keyboard buttons"""
 
     def __init__(self):
-        # Keyboards for only admins
-        self.admin_main_keyboard = ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text="📮 Yangi post yuborish")],
-                [KeyboardButton(text="📈 Bugungi Ma'lumotlar")],
-                [KeyboardButton(text="7️⃣ Haftalik Ma'lumotlar")],
-                [KeyboardButton(text="🌘 Oylik Ma'lumotlar")],
-                [KeyboardButton(text="📊 Barcha Ma'lumotlar")],
-            ],
-            resize_keyboard=True,
-        )
-
         # Keyboards for everyone
         self.main_keyboard = ReplyKeyboardMarkup(
             keyboard=[
@@ -36,6 +24,20 @@ class Buttons:
             ],
             resize_keyboard=True,
         )
+
+        # Keyboards for only admins
+        self.admin_main_keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="📮 Yangi post yuborish")],
+                [KeyboardButton(text="📈 Bugungi Ma'lumotlar")],
+                [KeyboardButton(text="7️⃣ Haftalik Ma'lumotlar")],
+                [KeyboardButton(text="🌘 Oylik Ma'lumotlar")],
+                [KeyboardButton(text="📊 Barcha Ma'lumotlar")],
+                *self.main_keyboard.keyboard,
+            ],
+            resize_keyboard=True,
+        )
+
         self.registration = ReplyKeyboardMarkup(
             keyboard=[[KeyboardButton(text="✍️ Ro'yxatdan o'tish")]],
             resize_keyboard=True,
