@@ -311,10 +311,10 @@ async def qrcode_make(message: types.Message, state: FSMContext):
 
         if req.status_code == 201:
             await message.answer(
-                "QrCode ingiz tayyor uni web sahifamizga kirib 'Profil' bo'limidan olishingiz mumkin\n"
-                "Unutmang, QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi",
+                "QrCode ingiz tayyor uni web sahifamizga kirib 'Profil' bo'limidan olishingiz mumkin",
                 reply_markup=inline_buttons.web_profile,
             )
+            await message.answer("Unutmang, QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi", reply_markup=buttons.main_keyboard)
             # await bot.send_photo(
             #     message.chat.id,
             #     f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
