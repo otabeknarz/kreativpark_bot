@@ -19,6 +19,7 @@ class Buttons:
         self.main_keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="🖼 Kirish uchun QR Code olish")],
+                [KeyboardButton(text="🖼 Chiqish uchun QR Code olish")],
                 [KeyboardButton(text="🔢 Kirish kodini olish")],
                 [KeyboardButton(text="👤 Ma'lumotlarim")],
             ],

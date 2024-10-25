@@ -309,70 +309,70 @@ async def qrcode_make(message: types.Message, state: FSMContext):
     )
 
     if req.status_code == 201:
-        await message.answer(
-            "QrCode ingiz tayyor uni web sahifamizga kirib 'Profil' bo'limidan olishingiz mumkin",
-            reply_markup=inline_buttons.web_profile,
-        )
-        await message.answer(
-            "Unutmang, QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi",
-            reply_markup=buttons.main_keyboard,
-        )
-        # await bot.send_photo(
-        #     message.chat.id,
-        #     f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
-        #     caption="Sizning kirish uchun qr codeingiz",
+        # await message.answer(
+        #     "QrCode ingiz tayyor uni web sahifamizga kirib 'Profil' bo'limidan olishingiz mumkin",
+        #     reply_markup=inline_buttons.web_profile,
+        # )
+        # await message.answer(
+        #     "Unutmang, QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi",
         #     reply_markup=buttons.main_keyboard,
         # )
+        await bot.send_photo(
+            message.chat.id,
+            f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
+            caption="Sizning kirish uchun qr codeingiz",
+            reply_markup=buttons.main_keyboard,
+        )
         await state.clear()
 
 
-# @debug_mode()
-# @dp.message(TextEqualsFilter("🖼 Chiqish uchun QR Code olish"))
-# async def logout_qrcode(message: types.Message):
-#     if not await is_subscribed(bot, message):
-#         return
-#
-#     response = json.loads(
-#         functions.get_req(
-#             bot_settings.CHECK_PEOPLE_URL + str(message.from_user.id) + "/"
-#         ).text
-#     )
-#
-#     if response["status"] == "false":
-#         await message.answer(
-#             "Ro'yxatdan topa olmadik avval ro'yxatdan o'ting",
-#             reply_markup=buttons.registration,
-#         )
-#         return
-#
-#     check_people_has_qrcode = functions.get_req(
-#         bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id) + "/"
-#     )
-#     if (
-#         json.loads(check_people_has_qrcode.text)["status"] == "false"
-#         and check_people_has_qrcode.status_code == 200
-#     ):
-#         req = functions.post_req(
-#             bot_settings.POST_QRCODE_URL,
-#             {"people_id": str(message.chat.id), "type": "OUT"},
-#         )
-#         if req.status_code == 201:
-#             await bot.send_photo(
-#                 message.chat.id,
-#                 f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
-#                 caption="Sizning chiqish uchun qr codeingiz",
-#                 reply_markup=buttons.main_keyboard,
-#             )
-#     elif (
-#         json.loads(check_people_has_qrcode.text)["status"] == "true"
-#         and check_people_has_qrcode.status_code == 200
-#     ):
-#         response = functions.get_req(
-#             bot_settings.GET_QRCODES_DELETE_URL + str(message.chat.id) + "/"
-#         )
-#         if response.status_code == 200:
-#             if json.loads(response.text)["status"] == "true":
-#                 await logout_qrcode(message)
+@debug_mode()
+@dp.message(TextEqualsFilter("🖼 Chiqish uchun QR Code olish"))
+async def logout_qrcode(message: types.Message):
+    if not await is_subscribed(bot, message):
+        return
+
+    response = json.loads(
+        functions.get_req(
+            bot_settings.CHECK_PEOPLE_URL + str(message.from_user.id) + "/"
+        ).text
+    )
+
+    if response["status"] == "false":
+        await message.answer(
+            "Ro'yxatdan topa olmadik avval ro'yxatdan o'ting",
+            reply_markup=buttons.registration,
+        )
+        return
+
+    check_people_has_qrcode = functions.get_req(
+        bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id) + "/"
+    )
+    if (
+        json.loads(check_people_has_qrcode.text)["status"] == "false"
+        and check_people_has_qrcode.status_code == 200
+    ):
+        req = functions.post_req(
+            bot_settings.POST_QRCODE_URL,
+            {"people_id": str(message.chat.id), "type": "OUT"},
+        )
+        if req.status_code == 201:
+            await bot.send_photo(
+                message.chat.id,
+                f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
+                caption="Sizning chiqish uchun qr codeingiz",
+                reply_markup=buttons.main_keyboard,
+            )
+    elif (
+        json.loads(check_people_has_qrcode.text)["status"] == "true"
+        and check_people_has_qrcode.status_code == 200
+    ):
+        response = functions.get_req(
+            bot_settings.GET_QRCODES_DELETE_URL + str(message.chat.id) + "/"
+        )
+        if response.status_code == 200:
+            if json.loads(response.text)["status"] == "true":
+                await logout_qrcode(message)
 
 
 @debug_mode()
