@@ -263,14 +263,14 @@ async def purpose_state(message: types.Message, state: FSMContext):
         bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id) + "/"
     )
 
-    if check_people_has_qrcode.json()["status"] == "true":
-        await message.answer(
-            "Sizning QrCodeingiz mavjud\n"
-            "QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi",
-            reply_markup=buttons.main_keyboard,
-        )
-        await state.clear()
-        return
+    # if check_people_has_qrcode.json()["status"] == "true":
+        # await message.answer(
+        #     "Sizning QrCodeingiz mavjud\n"
+        #     "QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi",
+        #     reply_markup=buttons.main_keyboard,
+        # )
+        # await state.clear()
+        # return
 
     await message.answer(
         "Quyidagi tugmalarda Kreativ Parkimizdagi manzillar bor va siz qayerga kirmoqchisiz?",
@@ -348,31 +348,29 @@ async def logout_qrcode(message: types.Message):
     check_people_has_qrcode = functions.get_req(
         bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id) + "/"
     )
-    if (
-        json.loads(check_people_has_qrcode.text)["status"] == "false"
-        and check_people_has_qrcode.status_code == 200
-    ):
-        req = functions.post_req(
-            bot_settings.POST_QRCODE_URL,
-            {"people_id": str(message.chat.id), "type": "OUT"},
+
+    req = functions.post_req(
+        bot_settings.POST_QRCODE_URL,
+        {"people_id": str(message.chat.id), "type": "OUT"},
+    )
+    if req.status_code == 201:
+        await bot.send_photo(
+            message.chat.id,
+            f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
+            caption="Sizning chiqish uchun qr codeingiz",
+            reply_markup=buttons.main_keyboard,
         )
-        if req.status_code == 201:
-            await bot.send_photo(
-                message.chat.id,
-                f"https://api.otabek.me/media/{req.json()['qr_code_image']}",
-                caption="Sizning chiqish uchun qr codeingiz",
-                reply_markup=buttons.main_keyboard,
-            )
-    elif (
-        json.loads(check_people_has_qrcode.text)["status"] == "true"
-        and check_people_has_qrcode.status_code == 200
-    ):
-        response = functions.get_req(
-            bot_settings.GET_QRCODES_DELETE_URL + str(message.chat.id) + "/"
-        )
-        if response.status_code == 200:
-            if json.loads(response.text)["status"] == "true":
-                await logout_qrcode(message)
+
+    # elif (
+    #     json.loads(check_people_has_qrcode.text)["status"] == "true"
+    #     and check_people_has_qrcode.status_code == 200
+    # ):
+    #     response = functions.get_req(
+    #         bot_settings.GET_QRCODES_DELETE_URL + str(message.chat.id) + "/"
+    #     )
+    #     if response.status_code == 200:
+    #         if json.loads(response.text)["status"] == "true":
+    #             await logout_qrcode(message)
 
 
 @debug_mode()
