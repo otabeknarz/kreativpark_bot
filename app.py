@@ -263,14 +263,16 @@ async def purpose_state(message: types.Message, state: FSMContext):
         bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id) + "/"
     )
 
-    # if check_people_has_qrcode.json()["status"] == "true":
-        # await message.answer(
-        #     "Sizning QrCodeingiz mavjud\n"
-        #     "QrCode ni skaner qilganingizdan so'ng profilingizda avtomatik ravishda chiqish uchun QrCode beriladi",
-        #     reply_markup=buttons.main_keyboard,
-        # )
-        # await state.clear()
-        # return
+    if check_people_has_qrcode.json()["status"] == "true":
+        qr_code = check_people_has_qrcode.json()['qrcode']
+        await bot.send_photo(
+            message.chat.id,
+            f"https://api.otabek.me/media/{qr_code['image_path']}",
+            caption=f"Sizning {'kirish' if qr_code['type'] == 'IN' else 'chiqish'} uchun qr codeingiz",
+            reply_markup=buttons.main_keyboard,
+        )
+        await state.clear()
+        return
 
     await message.answer(
         "Quyidagi tugmalarda Kreativ Parkimizdagi manzillar bor va siz qayerga kirmoqchisiz?",
