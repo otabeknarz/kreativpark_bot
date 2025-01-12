@@ -263,12 +263,17 @@ async def purpose_state(message: types.Message, state: FSMContext):
         bot_settings.CHECK_PEOPLE_HAS_QRCODE + str(message.chat.id) + "/"
     )
 
-    if check_people_has_qrcode.json()["status"] == "true":
-        qr_code = check_people_has_qrcode.json()['qrcode']
+    if check_people_has_qrcode.json()["status"] == "true" and check_people_has_qrcode.json()['people']['seat']:
+        people = check_people_has_qrcode.json()['people']
+        seat = people['seat']
+        qr_code = people['qrcode']
         await bot.send_photo(
             message.chat.id,
             f"https://api.otabek.me/media/{qr_code['image_path']}",
-            caption=f"Sizning {'kirish' if qr_code['type'] == 'IN' else 'chiqish'} uchun qr codeingiz",
+            caption=f"Sizning {'kirish' if qr_code['type'] == 'IN' else 'chiqish'} uchun qr codeingiz\n"
+                    f"Siz allaqachon online joy band qilgansiz\n"
+                    f"Joy IDsi: {seat['ID']}\n"
+                    f"Joy nomi: {seat['name']}",
             reply_markup=buttons.main_keyboard,
         )
         await state.clear()
